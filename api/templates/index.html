@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}竞品侦察雷达 · 30 秒看清竞品在干什么{% endblock %}
+
+{% block content %}
+
+<!-- ========== 1. Hero + 气泡引导 ========== -->
+<div class="hero">
+  <span class="eyebrow">给 AI 视频生成赛道 CXO 的竞品侦察工具</span>
+  <h1>30 秒看清竞品最近在干什么</h1>
+  <p class="subtitle">
+    不用再手动翻竞品官网、广告库和搜索词工具。<br />
+    输入一个竞品名字，直接得到一份可行动的侦察报告。
+  </p>
+
+  <div style="margin-top:22px;">
+    <div class="bubble">
+      <span class="q-icon">?</span>
+      <span>你想知道竞品最近在抢哪些关键词吗？</span>
+    </div>
+    <div class="bubble">
+      <span class="q-icon">?</span>
+      <span>你知道竞品投了什么广告、主打什么卖点吗？</span>
+    </div>
+    <div class="bubble">
+      <span class="q-icon">?</span>
+      <span>竞品悄悄改价格、换落地页、发新功能，你能第一时间发现吗？</span>
+    </div>
+    <div class="bubble">
+      <span class="q-icon">?</span>
+      <span>知道竞品在干什么之后，你知道哪些动作值得跟、哪些不用管吗？</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 2. 输入区 ========== -->
+<div class="card">
+  <h2>开始侦察</h2>
+  <p class="muted" style="margin-bottom:20px;">
+    输入竞品名字，生成一份包含关键词、广告、增长动作和行动建议的侦察报告。
+  </p>
+
+  <form method="get" action="/result" onsubmit="return validateForm(event)">
+    <div class="field">
+      <label for="competitor">竞品名字 <span style="color:#dc2626;">*</span></label>
+      <input type="text" id="competitor" name="competitor" placeholder="输入你想侦察的竞品名字" />
+    </div>
+
+    <div class="field">
+      <label for="website">竞品官网（选填）</label>
+      <input type="text" id="website" name="website" placeholder="例如：https://klingai.com" />
+    </div>
+
+    <button type="submit" class="btn">开始侦察 →</button>
+    <div id="form-error" class="error" style="display:none;"></div>
+
+    <p class="note-inline">
+      <b style="font-size:12.5px; color:#475569;">已收录数据（可直接试）：</b>
+      {% for name in examples %}
+      <span class="chip" onclick="fillCompetitor('{{ name }}')">{{ name }}</span>
+      {% endfor %}
+      <br />
+      <span style="font-size:12.5px;">也可以输入任意竞品名字，工具会生成一份预测报告（会明确标注）。</span>
+    </p>
+  </form>
+</div>
+
+<!-- ========== 3. 数据说明 ========== -->
+<div class="card">
+  <h3>数据说明</h3>
+  <p class="note">
+    <b>数据来源：</b>公开信息整理 + 模拟数据 &nbsp;·&nbsp; <b>时间范围：</b>2026 Q1–Q2 &nbsp;·&nbsp; <span class="tag">演示版</span>
+  </p>
+  <p class="note" style="margin-bottom:0;">
+    内置示例竞品（可灵、即梦、Runway、Pika、Sora、海螺 AI）为整理数据；非内置竞品会生成预测报告，并在结果页明确标注。未接入真实广告 API、关键词工具和 AI API。详细限制见 <a href="/about">关于页</a>。
+  </p>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillCompetitor(name) {
+  document.getElementById('competitor').value = name;
+  document.getElementById('competitor').focus();
+}
+function validateForm(e) {
+  var v = document.getElementById('competitor').value.trim();
+  if (!v) {
+    e.preventDefault();
+    var err = document.getElementById('form-error');
+    err.textContent = '请输入竞品名字';
+    err.style.display = 'block';
+    return false;
+  }
+  return true;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}{{ competitor }} 公开示例报告 · 竞品侦察雷达{% endblock %}
+
+{% block content %}
+<h1>{{ competitor }} 竞品侦察报告（公开示例）</h1>
+<p class="subtitle">
+  这是公开示例报告，可分享、可被搜索引擎收录。<br />
+  赛道：{{ info["赛道"] }} · 时间范围：2026 Q1–Q2 · 数据来源：公开信息整理 + 模拟数据
+  <span class="tag">公开示例</span>
+</p>
+
+<div class="card">
+  <h3>竞品概况</h3>
+  <ul>
+    <li>竞品名字：{{ competitor }}</li>
+    <li>所属赛道：{{ info["赛道"] }}</li>
+    {% if info["官网"] %}<li>官网：<a href="{{ info['官网'] }}" target="_blank" rel="noopener">{{ info["官网"] }}</a></li>{% endif %}
+    <li>数据时间范围：2026 Q1–Q2</li>
+    <li>数据来源：公开信息整理 + 模拟数据 <span class="tag">演示版</span></li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>一、关键词侦察</h2>
+  <ul>
+    {% for kw in info["关键词"] %}
+    <li><b>{{ kw["词"] }}</b> · 趋势：{{ kw["趋势"] }} · 竞争度：{{ kw["竞争度"] }} · 建议：{{ kw["建议"] }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="card">
+  <h2>二、广告侦察</h2>
+  <ul>
+    <li>卖点：{{ info["广告"]["卖点"] | join("、") }}</li>
+    <li>渠道：{{ info["广告"]["渠道"] | join("、") }}</li>
+    <li>差异化切入点：{{ info["广告"]["切入建议"] }}</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>三、增长动作监控</h2>
+  <ul>
+    <li>定价变化：{{ info["定价变化"]["内容"] }}（{{ info["定价变化"]["时间"] }}）</li>
+    <li>落地页变化：{{ info["落地页变化"]["内容"] }}（{{ info["落地页变化"]["时间"] }}）</li>
+    <li>产品发布：{{ info["产品发布"]["内容"] }}（{{ info["产品发布"]["时间"] }}）</li>
+    <li>内容 / 渠道：{{ info["内容渠道"]["内容"] }}（{{ info["内容渠道"]["时间"] }}）</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>四、行动建议</h2>
+  <ol>
+    {% for a in info["行动建议"] %}<li>{{ a }}</li>{% endfor %}
+  </ol>
+</div>
+
+<div class="card">
+  <h2>想看你自己竞品的报告？</h2>
+  <p class="note">输入一个竞品名字，30 秒生成一份同样的侦察报告。</p>
+  <div class="btn-row">
+    <a href="/" class="btn">检查你自己的竞品</a>
+    <a href="/about" class="btn btn-secondary">查看关于 / 数据说明</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2>订阅每周竞品动态 / 注册 MegaHit</h2>
+  <form onsubmit="return submitForm(event, '订阅')">
+    <div class="field">
+      <label>邮箱（订阅每周竞品动态）</label>
+      <input type="email" name="email" placeholder="you@company.com" />
+    </div>
+    <button type="submit" class="btn">订阅更新</button>
+    <div id="msg-订阅" class="success" style="display:none;">已提交</div>
+  </form>
+
+  <hr style="margin:22px 0; border:none; border-top:1px solid #f3f4f6;" />
+
+  <form onsubmit="return submitForm(event, '注册')">
+    <div class="field">
+      <label>邮箱（注册 MegaHit 等待列表）</label>
+      <input type="email" name="email" placeholder="you@company.com" />
+    </div>
+    <button type="submit" class="btn">注册 MegaHit</button>
+    <div id="msg-注册" class="success" style="display:none;">已提交</div>
+  </form>
+  <p class="note" style="margin-top:12px;">这是 MegaHit 的模拟注册入口，用于演示转化路径。</p>
+</div>
+
+<div class="card">
+  <h3>其他示例竞品</h3>
+  <div class="btn-row">
+    {% for name in examples %}
+    <a href="/example/{{ name }}" class="chip">{{ name }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+var competitorName = "{{ competitor }}";
+function submitForm(e, type) {
+  e.preventDefault();
+  var form = e.target;
+  var email = form.querySelector('input[name="email"]').value.trim();
+  var msg = document.getElementById('msg-' + type);
+  if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+    msg.textContent = '请输入正确的邮箱';
+    msg.style.color = '#dc2626';
+    msg.style.display = 'block';
+    return false;
+  }
+  var fd = new FormData();
+  fd.append('email', email);
+  fd.append('type', type);
+  fd.append('competitor', competitorName);
+  fd.append('source', '示例报告页');
+  fetch('/api/subscribe', { method: 'POST', body: fd })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data.ok) {
+        msg.textContent = '已提交，感谢！';
+        msg.style.color = '#059669';
+        msg.style.display = 'block';
+        form.reset();
+      } else {
+        msg.textContent = data.error || '提交失败，请稍后再试';
+        msg.style.color = '#dc2626';
+        msg.style.display = 'block';
+      }
+    })
+    .catch(function(){
+      msg.textContent = '提交失败，请稍后再试';
+      msg.style.color = '#dc2626';
+      msg.style.display = 'block';
+    });
+  return false;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}提交成功 · 竞品侦察雷达{% endblock %}
+
+{% block content %}
+<h1>提交成功</h1>
+<p class="subtitle">
+  你已成功{{ type }}{% if competitor %}（竞品：{{ competitor }}）{% endif %}。<br />
+  数据已记录，用于演示转化路径。
+  <span class="tag">演示版</span>
+</p>
+
+<div class="card">
+  <h3>下一步</h3>
+  <ul>
+    <li>如果是订阅：每周会收到竞品动态（演示阶段，暂不真实发送）。</li>
+    <li>如果是注册：你会进入 MegaHit 等待列表，后续可解锁完整监控。</li>
+  </ul>
+</div>
+
+<div class="btn-row">
+  {% if competitor %}
+  <a href="/result?competitor={{ competitor }}" class="btn">返回结果页</a>
+  {% endif %}
+  <a href="/" class="btn btn-secondary">回首页</a>
+  <a href="/about" class="btn btn-secondary">查看关于</a>
+</div>
+
+{% endblock %}

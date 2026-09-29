@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block title %}{{ competitor }} 竞品侦察报告 · 竞品侦察雷达{% endblock %}
+
+{% block content %}
+
+{% set kw_count = info["关键词"] | length %}
+{% set action_count = info["行动建议"] | length %}
+{% set follow_count = 0 %}
+{% if "值得" in info["定价变化"]["判断"] %}{% set follow_count = follow_count + 1 %}{% endif %}
+{% if "值得" in info["落地页变化"]["判断"] %}{% set follow_count = follow_count + 1 %}{% endif %}
+{% if "值得" in info["产品发布"]["判断"] %}{% set follow_count = follow_count + 1 %}{% endif %}
+{% if "值得" in info["内容渠道"]["判断"] %}{% set follow_count = follow_count + 1 %}{% endif %}
+
+<h1 style="margin-bottom:8px;">{{ competitor }} 竞品侦察报告</h1>
+<p class="muted" style="margin-bottom:24px;">
+  赛道：{{ info["赛道"] }} &nbsp;·&nbsp; 数据时间范围：2026 Q1–Q2 &nbsp;·&nbsp; 数据来源：公开信息整理 + 模拟数据
+</p>
+
+{% if is_mock %}
+<div class="warning-banner">
+  <strong>注意：该竞品不在内置数据范围内。</strong><br />
+  你输入的「{{ competitor }}」目前不在我们已整理的数据中，以下报告为<strong>基于同赛道竞品规律的预测数据</strong>，仅供演示参考，不代表真实情报。<br />
+  内置示例竞品有：可灵、即梦、Runway、Pika、Sora、海螺 AI。
+</div>
+{% else %}
+<div class="success-banner">
+  <strong>已收录竞品。</strong>以下数据来自内置竞品数据库（公开信息整理 + 模拟数据），时间范围 2026 Q1–Q2。
+</div>
+{% endif %}
+
+<div class="metric-grid">
+  <div class="metric">
+    <div class="m-label">监测关键词</div>
+    <div class="m-value m-blue">{{ kw_count }}</div>
+  </div>
+  <div class="metric">
+    <div class="m-label">值得跟进动作</div>
+    <div class="m-value m-amber">{{ follow_count }}</div>
+  </div>
+  <div class="metric">
+    <div class="m-label">本周行动建议</div>
+    <div class="m-value m-green">{{ action_count }}</div>
+  </div>
+  <div class="metric">
+    <div class="m-label">数据时间范围</div>
+    <div class="m-value" style="font-size:16px; margin-top:6px;">2026 Q1–Q2</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">一、关键词侦察</h2>
+  <p class="muted" style="margin-bottom:18px;">竞品最近在抢哪些词，哪些你也能抢。</p>
+
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+    {% for kw in info["关键词"] %}
+    <div style="border:1px solid #e6e8ee; border-radius:10px; padding:14px 16px; background:#fafbfd;">
+      <div style="font-weight:600; color:#0f172a; font-size:14.5px; margin-bottom:8px;">
+        {{ kw["词"] }}
+      </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px; font-size:13px;">
+        <span>
+          {% if kw["趋势"] == "涨" %}<span class="trend-up">↑ 涨</span>
+          {% elif kw["趋势"] == "跌" %}<span class="trend-down">↓ 跌</span>
+          {% else %}<span class="trend-flat">→ 平</span>{% endif %}
+        </span>
+        <span style="color:#94a3b8;">|</span>
+        <span style="color:#64748b;">竞争度：<b style="color:#334155;">{{ kw["竞争度"] }}</b></span>
+      </div>
+      <div class="bar {% if kw['竞争度'] == '低' %}bar-low{% elif kw['竞争度'] == '中' %}bar-mid{% else %}bar-high{% endif %}" style="margin-bottom:10px;">
+        <span></span>
+      </div>
+      <div style="font-size:13px; color:#64748b; line-height:1.6;">
+        <b style="color:#334155;">建议：</b>{{ kw["建议"] }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">二、广告侦察</h2>
+
+  <h3>竞品在投什么卖点</h3>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+    {% for s in info["广告"]["卖点"] %}
+    <span class="chip" style="cursor:default;">{{ s }}</span>
+    {% endfor %}
+  </div>
+
+  <h3>投放渠道</h3>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+    {% for c in info["广告"]["渠道"] %}
+    <span class="chip" style="cursor:default; background:#eff6ff; border-color:#bfdbfe; color:#2563eb;">{{ c }}</span>
+    {% endfor %}
+  </div>
+
+  <h3>你的差异化切入点</h3>
+  <p style="margin-bottom:0;">{{ info["广告"]["切入建议"] }}</p>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">三、增长动作监控</h2>
+  <p class="muted" style="margin-bottom:20px;">竞品最近的四个关键动作，以及是否值得跟进。</p>
+
+  <div class="timeline">
+    <div class="timeline-item">
+      <div class="t-title">定价变化</div>
+      <div class="t-meta">{{ info["定价变化"]["时间"] }} · 判断：{{ info["定价变化"]["判断"] }}</div>
+      <div class="t-body">
+        {{ info["定价变化"]["内容"] }}<br />
+        <b>建议：</b>{{ info["定价变化"]["建议"] }}
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="t-title">落地页变化</div>
+      <div class="t-meta">{{ info["落地页变化"]["时间"] }} · 判断：{{ info["落地页变化"]["判断"] }}</div>
+      <div class="t-body">
+        {{ info["落地页变化"]["内容"] }}<br />
+        <b>建议：</b>{{ info["落地页变化"]["建议"] }}
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="t-title">产品发布</div>
+      <div class="t-meta">{{ info["产品发布"]["时间"] }} · 判断：{{ info["产品发布"]["判断"] }}</div>
+      <div class="t-body">
+        {{ info["产品发布"]["内容"] }}<br />
+        <b>建议：</b>{{ info["产品发布"]["建议"] }}
+      </div>
+    </div>
+    <div class="timeline-item">
+      <div class="t-title">内容 / 渠道变化</div>
+      <div class="t-meta">{{ info["内容渠道"]["时间"] }} · 判断：{{ info["内容渠道"]["判断"] }}</div>
+      <div class="t-body">
+        {{ info["内容渠道"]["内容"] }}<br />
+        <b>建议：</b>{{ info["内容渠道"]["建议"] }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">四、行动建议</h2>
+  <p class="muted" style="margin-bottom:16px;">按优先级排序，本周可以先做的几件事。</p>
+  <ol class="action-list">
+    {% for a in info["行动建议"] %}
+    <li>{{ a }}</li>
+    {% endfor %}
+  </ol>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">把这份报告分享给团队</h2>
+  <p class="muted" style="margin-bottom:14px;">团队打开链接就能看到同样结果，不用重新输入。</p>
+  <div class="btn-row" style="align-items:center; margin-bottom:6px;">
+    <button class="btn btn-secondary" onclick="copyShare()">复制分享链接</button>
+    <span id="share-msg" class="success" style="display:none;">已复制</span>
+  </div>
+  <p class="note-inline" id="share-url" style="word-break:break-all;"></p>
+</div>
+
+<div class="card" style="background:linear-gradient(180deg,#fafbff 0%,#ffffff 60%);">
+  <h2 style="margin-top:0;">想持续追踪 {{ competitor }} 的变化吗？</h2>
+  <p class="muted" style="margin-bottom:22px;">
+    这次只生成了一份快照。竞品每周都在动，你可以选择下面一种方式继续。
+  </p>
+
+  <div style="display:grid; grid-template-columns: 1fr; gap:16px;">
+
+    <div style="border:1px solid #e6e8ee; border-radius:12px; padding:18px 20px; background:#fff;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <span style="display:inline-block; width:6px; height:6px; background:#2563eb; border-radius:50%;"></span>
+        <span style="font-weight:700; color:#0f172a; font-size:15px;">每周接收竞品动态</span>
+      </div>
+      <p class="muted" style="margin-bottom:14px; font-size:13px;">
+        留个邮箱，每周一推送 {{ competitor }} 的关键词、广告和增长动作变化。
+      </p>
+      <form onsubmit="return submitForm(event, '订阅')" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input type="email" name="email" placeholder="you@company.com" style="flex:1; min-width:220px;" />
+        <button type="submit" class="btn" style="flex-shrink:0;">订阅更新</button>
+      </form>
+      <div id="msg-订阅" class="success" style="display:none;">已提交</div>
+    </div>
+
+    <div style="border:1px solid #dbeafe; border-radius:12px; padding:18px 20px; background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <span style="display:inline-block; width:6px; height:6px; background:#7c3aed; border-radius:50%;"></span>
+        <span style="font-weight:700; color:#0f172a; font-size:15px;">注册 MegaHit，解锁完整监控</span>
+        <span class="tag tag-blue">推荐</span>
+      </div>
+      <p class="muted" style="margin-bottom:14px; font-size:13px;">
+        追踪多个竞品 · 查看历史趋势 · 完整的修复与跟进清单。
+      </p>
+      <form onsubmit="return submitForm(event, '注册')" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <input type="email" name="email" placeholder="you@company.com" style="flex:1; min-width:220px;" />
+        <button type="submit" class="btn" style="flex-shrink:0; background:#7c3aed;">注册 MegaHit</button>
+      </form>
+      <div id="msg-注册" class="success" style="display:none;">已提交</div>
+      <p class="note-inline" style="margin-top:10px; font-size:12px;">
+        这是 MegaHit 的模拟注册入口，用于演示转化路径。数据会记录到 Google Sheet。
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<div class="btn-row">
+  <a href="/" class="btn btn-secondary">← 换一个竞品</a>
+  <a href="/about" class="btn btn-secondary">查看关于 / 数据说明</a>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+var competitorName = "{{ competitor }}";
+var shareUrl = window.location.origin + "/result?competitor=" + encodeURIComponent(competitorName);
+document.getElementById('share-url').textContent = shareUrl;
+
+function copyShare() {
+  navigator.clipboard.writeText(shareUrl).then(function() {
+    var m = document.getElementById('share-msg');
+    m.style.display = 'inline';
+    setTimeout(function(){ m.style.display = 'none'; }, 2000);
+  });
+}
+
+function submitForm(e, type) {
+  e.preventDefault();
+  var form = e.target;
+  var email = form.querySelector('input[name="email"]').value.trim();
+  var msg = document.getElementById('msg-' + type);
+
+  if (!email || email.indexOf('@') === -1 || email.indexOf('.') === -1) {
+    msg.textContent = '请输入正确的邮箱';
+    msg.style.color = '#dc2626';
+    msg.style.display = 'block';
+    return false;
+  }
+
+  var fd = new FormData();
+  fd.append('email', email);
+  fd.append('type', type);
+  fd.append('competitor', competitorName);
+  fd.append('source', '结果页');
+
+  fetch('/api/subscribe', { method: 'POST', body: fd })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+            if (data.ok) {
+        var t = new Date();
+        var stamp = t.getFullYear() + '-' +
+          String(t.getMonth()+1).padStart(2,'0') + '-' +
+          String(t.getDate()).padStart(2,'0') + ' ' +
+          String(t.getHours()).padStart(2,'0') + ':' +
+          String(t.getMinutes()).padStart(2,'0');
+        msg.innerHTML = '✅ 已记录到 Google Sheet<br><span style="font-size:12px; color:#64748b;">时间：' + stamp + ' · 类型：' + type + ' · 竞品：' + competitorName + '</span>';
+        msg.style.color = '#059669';
+        msg.style.display = 'block';
+        form.reset();
+      } else {
+        msg.textContent = data.error || '提交失败，请稍后再试';
+        msg.style.color = '#dc2626';
+        msg.style.display = 'block';
+      }
+    })
+    .catch(function(){
+      msg.textContent = '提交失败，请稍后再试';
+      msg.style.color = '#dc2626';
+      msg.style.display = 'block';
+    });
+
+  return false;
+}
+</script>
+{% endblock %}

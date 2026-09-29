@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}竞品侦察雷达{% endblock %}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #f5f7fb;
+      color: #1f2328;
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: #2563eb; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ============ 顶部导航 ============ */
+    .nav {
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .nav .brand {
+      font-weight: 800;
+      font-size: 16px;
+      color: #0f172a;
+      letter-spacing: 0.2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav .brand-logo {
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 7px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .nav .links a {
+      margin-left: 22px;
+      font-size: 14px;
+      color: #4b5563;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .nav .links a:hover { color: #2563eb; text-decoration: none; }
+
+    /* ============ 布局 ============ */
+    .container { max-width: 900px; margin: 0 auto; padding: 40px 22px 72px; }
+
+    /* ============ 标题层级 ============ */
+    h1 {
+      font-size: 34px;
+      line-height: 1.25;
+      margin-bottom: 14px;
+      color: #0b1220;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+    }
+    h2 {
+      font-size: 20px;
+      margin: 26px 0 14px;
+      color: #0f172a;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+    h3 {
+      font-size: 15px;
+      margin: 18px 0 10px;
+      color: #334155;
+      font-weight: 700;
+      letter-spacing: 0.1px;
+      text-transform: none;
+    }
+    p { margin-bottom: 12px; color: #475569; }
+    .subtitle {
+      font-size: 16px;
+      color: #475569;
+      margin-bottom: 24px;
+      line-height: 1.75;
+    }
+    .muted { color: #64748b; font-size: 13.5px; }
+
+    /* ============ 卡片 ============ */
+    .card {
+      background: #fff;
+      border: 1px solid #e6e8ee;
+      border-radius: 14px;
+      padding: 26px 26px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03), 0 4px 14px rgba(15,23,42,0.03);
+    }
+
+    /* 顶部 Hero */
+    .hero {
+      background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+      border: 1px solid #e6e8ee;
+      border-radius: 16px;
+      padding: 34px 30px 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03), 0 8px 24px rgba(37,99,235,0.06);
+    }
+    .hero .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1px solid #dbeafe;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      letter-spacing: 0.4px;
+    }
+
+    /* ============ 问句气泡 ============ */
+    .bubble {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #fff;
+      border: 1px solid #e6e8ee;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #1e293b;
+      font-weight: 500;
+      line-height: 1.6;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+      transition: all 0.15s;
+    }
+    .bubble:hover {
+      border-color: #c7d2fe;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .bubble .q-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ============ 按钮 ============ */
+    .btn {
+      display: inline-block;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+    }
+    .btn:hover {
+      background: #1d4ed8;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.28);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: #fff;
+      color: #2563eb;
+      border: 1px solid #cbd5e1;
+      box-shadow: none;
+    }
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+      box-shadow: none;
+      transform: none;
+    }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+
+    /* ============ 示例 chip ============ */
+    .chip {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 13px;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .chip:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #2563eb;
+    }
+
+    /* ============ 表单 ============ */
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fff;
+      transition: all 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    label {
+      display: block;
+      font-size: 13.5px;
+      color: #334155;
+      margin-bottom: 7px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+    .field { margin-bottom: 18px; }
+    .note { font-size: 13px; color: #64748b; line-height: 1.65; }
+    .note-inline { font-size: 13px; color: #64748b; margin-top: 10px; line-height: 1.7; }
+
+    /* ============ 标签 ============ */
+    .tag {
+      display: inline-block;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 5px;
+      margin-left: 6px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .tag-green { background: #d1fae5; color: #065f46; }
+    .tag-red { background: #fee2e2; color: #991b1b; }
+    .tag-blue { background: #dbeafe; color: #1e40af; }
+    .tag-gray { background: #e5e7eb; color: #374151; }
+
+    /* ============ 提示条 ============ */
+    .warning-banner {
+      background: linear-gradient(180deg, #fffbeb 0%, #fef9e7 100%);
+      border: 1px solid #fcd34d;
+      border-left: 4px solid #f59e0b;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      color: #78350f;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .warning-banner strong { color: #92400e; font-weight: 700; }
+
+    .success-banner {
+      background: linear-gradient(180deg, #ecfdf5 0%, #f0fdf9 100%);
+      border: 1px solid #6ee7b7;
+      border-left: 4px solid #10b981;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 22px;
+      color: #065f46;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .success-banner strong { color: #047857; font-weight: 700; }
+
+    /* ============ 数据可视化小部件 ============ */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 640px) {
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 26px; }
+      .hero { padding: 26px 22px 22px; }
+    }
+    .metric {
+      background: #fff;
+      border: 1px solid #e6e8ee;
+      border-radius: 12px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+    }
+    .metric .m-label {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+    .metric .m-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+    .metric .m-value.m-blue { color: #2563eb; }
+    .metric .m-value.m-amber { color: #d97706; }
+    .metric .m-value.m-green { color: #059669; }
+
+    /* 进度条 */
+    .bar {
+      width: 100%;
+      height: 6px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .bar > span {
+      display: block;
+      height: 100%;
+      border-radius: 999px;
+    }
+    .bar-low > span { width: 30%; background: #10b981; }
+    .bar-mid > span { width: 65%; background: #f59e0b; }
+    .bar-high > span { width: 95%; background: #ef4444; }
+
+    /* 趋势箭头 */
+    .trend-up { color: #059669; font-weight: 700; }
+    .trend-flat { color: #6b7280; font-weight: 700; }
+    .trend-down { color: #dc2626; font-weight: 700; }
+
+    /* ============ 时间线 ============ */
+    .timeline { position: relative; padding-left: 22px; margin-top: 6px; }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 6px; top: 6px; bottom: 6px;
+      width: 2px;
+      background: linear-gradient(180deg, #dbeafe, #e0e7ff);
+      border-radius: 2px;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 18px;
+      padding-left: 6px;
+    }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -22px; top: 7px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #2563eb;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #dbeafe;
+    }
+    .timeline-item .t-title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 14.5px;
+      margin-bottom: 4px;
+    }
+    .timeline-item .t-meta {
+      font-size: 12.5px;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .timeline-item .t-body {
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.7;
+    }
+    .timeline-item .t-body b { color: #0f172a; }
+
+    /* ============ 行动建议卡片 ============ */
+    .action-list { list-style: none; padding: 0; margin: 0; counter-reset: action; }
+    .action-list li {
+      counter-increment: action;
+      position: relative;
+      background: #f8faff;
+      border: 1px solid #e0e7ff;
+      border-radius: 10px;
+      padding: 14px 16px 14px 52px;
+      margin-bottom: 10px;
+      font-size: 14.5px;
+      color: #1e293b;
+      line-height: 1.65;
+    }
+    .action-list li::before {
+      content: counter(action);
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    /* ============ 页脚 ============ */
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #94a3b8;
+      padding: 32px 20px;
+      border-top: 1px solid #e5e7eb;
+      margin-top: 48px;
+      line-height: 1.85;
+    }
+    .footer a { color: #64748b; margin: 0 8px; }
+    .footer a:hover { color: #2563eb; }
+
+    ul { padding-left: 20px; margin-bottom: 12px; }
+    li { margin-bottom: 6px; color: #475569; }
+    b { color: #0f172a; font-weight: 600; }
+
+    .error { color: #dc2626; font-size: 14px; margin-top: 8px; }
+    .success { color: #059669; font-size: 14px; margin-top: 8px; }
+
+    hr.soft { border: none; border-top: 1px solid #f1f5f9; margin: 22px 0; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div class="brand">
+      <span class="brand-logo">R</span>
+      竞品侦察雷达
+    </div>
+        <div class="links">
+      <a href="/">首页</a>
+      <a href="/about">关于</a>
+    </div>
+  </div>
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+    <div class="footer">
+    <a href="/">首页</a>
+    <a href="/about">关于</a>
+    <div style="margin-top:8px;">数据来源：公开信息整理 + 模拟数据 · 时间范围：2026 Q1–Q2 · 演示版</div>
+    <div style="margin-top:12px; font-size:12px;">
+      <a href="/admin" style="color:#cbd5e1;">内部人员入口</a>
+    </div>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

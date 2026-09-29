@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}内部数据 · 竞品侦察雷达{% endblock %}
+
+{% block content %}
+
+<h1 style="margin-bottom:8px;">内部数据</h1>
+<p class="muted" style="margin-bottom:24px;">
+  所有订阅 / 注册提交都会实时写入 Google Sheet，这里是只读视图。
+</p>
+
+{% if error %}
+<div class="warning-banner">
+  <strong>提示：</strong>{{ error }}
+</div>
+{% endif %}
+
+{% if rows and rows|length > 0 %}
+<div class="card" style="padding:0; overflow:hidden;">
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr style="background:#f8fafc; text-align:left;">
+        {% for cell in rows[0] %}
+        <th style="padding:12px 14px; font-size:13px; color:#475569; font-weight:600; border-bottom:1px solid #e6e8ee;">
+          {{ cell }}
+        </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows[1:] %}
+      <tr style="border-bottom:1px solid #f1f5f9;">
+        {% for cell in row %}
+        <td style="padding:12px 14px; color:#334155;">
+          {{ cell }}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="metric-grid" style="margin-top:6px;">
+  <div class="metric">
+    <div class="m-label">总提交数</div>
+    <div class="m-value m-blue">{{ rows|length - 1 }}</div>
+  </div>
+</div>
+
+{% else %}
+<div class="card">
+  <p class="muted" style="margin-bottom:0;">暂无提交数据。让别人去结果页填一个邮箱试试。</p>
+</div>
+{% endif %}
+
+<div class="btn-row" style="margin-top:20px;">
+  <a href="/" class="btn btn-secondary">← 回首页</a>
+</div>
+
+{% endblock %}
